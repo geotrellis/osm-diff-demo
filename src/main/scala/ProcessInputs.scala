@@ -1,4 +1,4 @@
-package geotrellis.batch
+package oiosmdiff
 
 import geotrellis.raster._
 import geotrellis.raster.io.geotiff.MultibandGeoTiff
