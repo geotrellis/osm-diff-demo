@@ -3,11 +3,16 @@ package oiosmdiff
 import java.net.URI
 
 import geotrellis.spark.io.kryo.KryoRegistrator
-import cats.implicits._
+
 import com.monovore.decline._
+
+import org.locationtech.geomesa.spark.jts._
+
 import org.apache.spark.SparkConf
 import org.apache.spark.serializer.KryoSerializer
 import org.apache.spark.sql.SparkSession
+
+import cats.implicits._
 
 import scala.util.Properties
 
@@ -36,16 +41,18 @@ object Main
             val conf =
               new SparkConf()
                 .setIfMissing("spark.master", "local[*]")
+                .setAppName("OI OSM Diff")
                 .set("spark.serializer", classOf[KryoSerializer].getName)
                 .set("spark.kryo.registrator", classOf[KryoRegistrator].getName)
-                .set("spark.executionEnv.AWS_PROFILE",
-                     Properties.envOrElse("AWS_PROFILE", "default"))
+                .set("spark.executionEnv.AWS_PROFILE", Properties.envOrElse("AWS_PROFILE", "default"))
 
-            implicit val spark = SparkSession.builder
-              .appName("OI OSM Diff")
-              .enableHiveSupport
-              .config(conf)
-              .getOrCreate
+            implicit val ss =
+              SparkSession
+                .builder
+                .enableHiveSupport
+                .config(conf)
+                .getOrCreate
+                .withJTS
 
             try {
               val vectorDiff = new OiOsmDiff(osmOrcUri, oiGeoJsonUri)
@@ -53,7 +60,7 @@ object Main
             } catch {
               case e: Exception => throw e
             } finally {
-              spark.stop
+              ss.stop
             }
         }
       }
