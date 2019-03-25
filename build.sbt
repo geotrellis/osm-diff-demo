@@ -19,6 +19,7 @@ lazy val root = (project in file(".")).settings(
     Dependencies.vectorpipe,
     Dependencies.scalaLogging,
     Dependencies.sparkCore % "compile",
+    Dependencies.sparkHive % "compile",
     Dependencies.sparkSql  % "compile"
   ),
   resolvers ++= Seq(

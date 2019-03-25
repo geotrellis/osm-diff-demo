@@ -43,6 +43,7 @@ object Main
 
             implicit val spark = SparkSession.builder
               .appName("OI OSM Diff")
+              .enableHiveSupport
               .config(conf)
               .getOrCreate
 
